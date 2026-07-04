@@ -17,5 +17,16 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/vessels", vesselRoutes);
+const dashboardRoutes =
+require("./routes/dashboardRoutes");
+
+app.use(
+    "/api/dashboard",
+    dashboardRoutes
+);
+
+const portRoutes = require("./routes/portRoutes");
+
+app.use("/api/ports", portRoutes);
 
 module.exports = app;
