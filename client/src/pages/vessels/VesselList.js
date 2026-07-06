@@ -6,6 +6,9 @@ import { createVessel } from "../../services/vesselService";
 import { deleteVessel } from "../../services/vesselService";
 import { updateVessel } from "../../services/vesselService";
 import { Modal } from "bootstrap";
+import { toast } from "react-toastify";
+import PageHeader from "../../components/common/PageHeader";
+import ConfirmDeleteModal from "../../components/common/ConfirmDeleteModal";
 
 function VesselList() {
 
@@ -20,60 +23,62 @@ function VesselList() {
         setVessels(res.data);
     };
 
-    const handleSave = async (data) => {
+const handleSave = async (data) => {
   try {
-
     if (editData) {
-
       await updateVessel(editData._id, data);
-
-      alert("Vessel Updated");
-
-      setEditData(null);
-
+      toast.success("Vessel updated successfully");
     } else {
-
       await createVessel(data);
-
-      alert("Vessel Added");
-
+      toast.success("Vessel added successfully");
     }
 
-    loadVessels();
+    // Refresh table
+    await loadVessels();
+
+    // Close modal
+    const modalElement = document.getElementById("vesselModal");
+
+    const modal = Modal.getOrCreateInstance(modalElement);
+
+    modal.hide();
+
+    // Reset edit mode
+    setEditData(null);
 
   } catch (err) {
-
-    alert(err.response?.data?.message || "Something went wrong");
-
-  }
-  const modalElement = document.getElementById("vesselModal");
-
-const modalInstance = Modal.getInstance(modalElement);
-
-if (modalInstance) {
-    modalInstance.hide();
-}
-};
-const handleDelete = async (id) => {
-
-    const confirmDelete = window.confirm(
-        "Delete this vessel?"
+    toast.error(
+      err.response?.data?.message ||
+      err.response?.data ||
+      err.message ||
+      "Something went wrong"
     );
+  }
+};
 
-    if (!confirmDelete) return;
+const [deleteId, setDeleteId] = useState(null);
+const handleDelete = async () => {
+  try {
+    await deleteVessel(deleteId);
 
-    try {
+    toast.success("Vessel deleted successfully");
 
-        await deleteVessel(id);
+    await loadVessels();
+    setDeleteId(null);
 
-        loadVessels();
+    const modal =
+      Modal.getOrCreateInstance(
+        document.getElementById("confirmDeleteModal")
+      );
 
-    } catch (err) {
+    modal.hide();
 
-        alert("Delete Failed");
-
-    }
-
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message ||
+      "Delete failed"
+    );
+  }
 };
 
 const [editData, setEditData] = useState(null);
@@ -82,21 +87,12 @@ const [editData, setEditData] = useState(null);
 
         <DashboardLayout>
 
-            <div className="d-flex justify-content-between mb-3">
-
-                <h2>Vessels</h2>
-
-                <button
-  className="btn btn-primary"
-  data-bs-toggle="modal"
-  data-bs-target="#vesselModal"
+            <PageHeader
+  title="Vessel Management"
+  buttonText="+ Add Vessel"
+  modalId="vesselModal"
   onClick={() => setEditData(null)}
->
-  + Add Vessel
-</button>
-                {/* <VesselForm onSave={handleSave} editData={editData}/> */}
-
-            </div>
+/>
 
             <table className="table table-bordered">
 
@@ -152,12 +148,15 @@ vessel.status === "Active"
   Edit
 </button>
 
-    <button
-    className="btn btn-danger btn-sm"
-    onClick={() => handleDelete(vessel._id)}
+   <button
+  className="btn btn-danger btn-sm"
+  data-bs-toggle="modal"
+  data-bs-target="#confirmDeleteModal"
+  onClick={() => setDeleteId(vessel._id)}
 >
-    Delete
+  Delete
 </button>
+
 </td>
                         </tr>
 
@@ -201,6 +200,12 @@ vessel.status === "Active"
     </div>
   </div>
 </div>
+
+<ConfirmDeleteModal
+  title="Delete Vessel"
+  message="Are you sure you want to delete this vessel?"
+  onConfirm={handleDelete}
+/>
 
         </DashboardLayout>
 

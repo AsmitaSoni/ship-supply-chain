@@ -5,6 +5,11 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import VesselList from "./pages/vessels/VesselList";
 import PortList from "./pages/ports/PortList";
+import NotFound from "./pages/NotFound";
+import LocationList from "./pages/locations/LocationList";
+import PathList from "./pages/paths/PathList";
+import AdminRoute from "./routes/AdminRoute";
+import UserList from "./pages/users/UserList";
 
 function App() {
   return (
@@ -32,7 +37,31 @@ function App() {
         </ProtectedRoute>
     }
 />
+<Route
+  path="/locations"
+  element={
+    <ProtectedRoute>
+      <LocationList />
+    </ProtectedRoute>
+  }
+/>
 
+<Route
+  path="/paths"
+  element={
+    <ProtectedRoute>
+      <PathList />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/users"
+  element={
+    <AdminRoute>
+      <UserList />
+    </AdminRoute>
+  }
+/>
 <Route
   path="/ports"
   element={
@@ -41,6 +70,7 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route path="*" element={<NotFound />} />
 
       </Routes>
     </BrowserRouter>

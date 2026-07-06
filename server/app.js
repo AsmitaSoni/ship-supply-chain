@@ -29,4 +29,16 @@ const portRoutes = require("./routes/portRoutes");
 
 app.use("/api/ports", portRoutes);
 
+const locationRoutes = require("./routes/locationRoutes");
+
+app.use("/api/locations", locationRoutes);
+
+const pathRoutes = require("./routes/pathRoutes");
+
+app.use("/api/paths", pathRoutes);
+
+const userRoutes = require("./routes/userRoutes");
+
+app.use("/api/users", userRoutes);
+
 module.exports = app;

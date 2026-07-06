@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function Sidebar() {
+
+  const { user } = useAuth();
+
   return (
     <div
       className="bg-dark text-white p-3"
@@ -40,11 +44,13 @@ function Sidebar() {
           </Link>
         </li>
 
-        <li className="nav-item mb-2">
-          <Link className="nav-link text-white" to="/users">
-            Users
-          </Link>
-        </li>
+        {user?.role === "Admin" && (
+          <li className="nav-item mb-2">
+            <Link className="nav-link text-white" to="/users">
+              Users
+            </Link>
+          </li>
+        )}
 
       </ul>
     </div>
